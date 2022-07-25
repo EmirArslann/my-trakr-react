@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Category from './Category';
+import axios from 'axios';
 
 export default function Transaction(props) {
   // const accounts = props.accounts
@@ -28,9 +29,17 @@ export default function Transaction(props) {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newFormData = { ...formData, id: transactions.length + 1 };
-    const newTransactions = [...transactions, newFormData];
-    setTransactions(newTransactions);
+    // const newFormData = { ...formData, id: transactions.length + 1 };
+    // const newTransactions = [...transactions, newFormData];
+    // setTransactions(newTransactions);
+    axios
+    .post('/transaction', { newTransaction:formData })
+    .then((res) => {
+      console.log('res-transactions', res);
+      setTransactions(res.data);
+    })
+    .catch((err) => console.log('err', err));
+    
   };
 
   return (

@@ -28,6 +28,13 @@ export default function Main() {
   //     setAccounts(res.data);
   //   });
   // }, [transactions]);
+  useEffect(() => {
+    axios.get('/transactions').then((res) => {
+      console.log('res', res.data);
+      setTransactions(res.data);
+    });
+  }, []);
+  
   return (
     <main>
       <Account accounts={accounts} setAccounts={setAccounts} />
@@ -36,6 +43,7 @@ export default function Main() {
         setTransactions={setTransactions}
         accounts={accounts}
       />
+    
     </main>
   );
 }
