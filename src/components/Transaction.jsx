@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useState } from 'react';
 import Category from './Category';
 import axios from 'axios';
@@ -40,30 +39,15 @@ export default function Transaction(props) {
     console.log('newFormData', newFormData);
     setFormData(newFormData);
   };
-
   const accountsOptions = props.accounts.map((account) => (
     <option key={account.id} value={account.id}>
       {account.name}
     </option>
   ));
-  return (
-    <section>
-      <h2>New Transaction Form</h2>
-      <form onSubmit={handleSubmit}>
-        <div onChange={handleChange}>
-          <input type='radio' name='type' value={'Deposit'} /> Deposit
-          <input type='radio' name='type' value={'Withdrawal'} /> Withdrawal
-          <input type='radio' name='type' value={'Transfer'} /> Transfer
-        </div>
-        <div>
-          <label htmlFor='accountId'>Account: </label>
-          <select name='accountId' defaultValue='' onChange={handleChange}>
-            <option value={''} disabled>
-              Select an account
-            </option>
-            {accountsOptions}
-          </select>
-        </div>
+  let showSelect 
+  if(formData.type === 'Transfer'){
+    showSelect = (
+      <div>
         <div>
           <label htmlFor='accountIdFrom'>From:</label>
           <select name='accountIdFrom' defaultValue='' onChange={handleChange}>
@@ -73,7 +57,7 @@ export default function Transaction(props) {
             {accountsOptions}
           </select>
         </div>
-        <div>
+          <div>
           <label htmlFor='accountIdTo'>To:</label>
           <select name='accountIdTo' defaultValue='' onChange={handleChange}>
             <option value={''} disabled>
@@ -82,6 +66,35 @@ export default function Transaction(props) {
             {accountsOptions}
           </select>
         </div>
+      </div> 
+    )
+  } else {
+       showSelect = (
+       <div>
+          <label htmlFor='accountId'>Account: </label>
+          <select name='accountId' defaultValue='' onChange={handleChange}>
+            <option value={''} disabled>
+              Select an account
+            </option>
+            {accountsOptions}
+          </select>
+        </div>
+       )
+
+
+  }
+
+  
+  return (
+    <section>
+      <h2>New Transaction Form</h2>
+      <form onSubmit={handleSubmit}>
+        <div onChange={handleChange}>
+          <input type='radio' name='type' value={'Deposit'}/> Deposit
+          <input type='radio' name='type' value={'Withdrawal'}  /> Withdrawal
+          <input type='radio' name='type' value={'Transfer'}  /> Transfer
+        </div>
+        {showSelect}
         <Category handleChange={handleChange} />
         <div>
           <label htmlFor='description'>Description:</label>

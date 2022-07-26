@@ -37,7 +37,7 @@ export default function Category(props) {
         {categoriesOptions}
         <option value='add-new'>Add new category</option>
       </select>
-      {selectCategoryRef.current.value === 'add-new' && (
+      {selectCategoryRef.current && selectCategoryRef.current.value === 'add-new' && (
         <AddCategory
           categoryName={categoryName}
           setCategoryName={setCategoryName}

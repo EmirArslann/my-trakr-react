@@ -1,13 +1,15 @@
 import './App.css';
 import Header from './components/Header';
 import Main from './components/Main';
+import { StyledApp } from './components/styles.components';
+
 
 function App() {
   return (
-    <div className='App'>
+    <StyledApp color='red'>
       <Header />
       <Main />
-    </div>
+    </StyledApp>
   );
 }
 
