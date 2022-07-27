@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useRef, useState } from 'react';
 import Category from './Category';
 import axios from 'axios';
 
 export default function Transaction(props) {
-  const { setTransactions, transactions } = props;
+  const { setTransactions, transactions, accounts } = props;
   const [formData, setFormData] = useState({
-    id: 0,
     type: '',
     amount: 0,
     description: '',
@@ -13,15 +13,8 @@ export default function Transaction(props) {
     accountIdFrom: 0,
     accountIdTo: 0,
   });
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log('submitted form transaction');
-    axios
-      .post('/transaction', { newTransaction: formData })
-      .then((response) => {
-        setTransactions([...transactions, response.data]);
-      });
-  };
+  const transactionTypeRef = useRef();
+
   const handleChange = (event) => {
     const name = event.target.name;
     let value;
@@ -39,62 +32,89 @@ export default function Transaction(props) {
     console.log('newFormData', newFormData);
     setFormData(newFormData);
   };
-  const accountsOptions = props.accounts.map((account) => (
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('formData', formData);
+    axios
+      .post('/transaction', { newTransaction: formData })
+      .then((response) => {
+        console.log(response.data);
+        const newTransactions = [...transactions, ...response.data];
+        setTransactions(newTransactions);
+      });
+    // const newFormData = { ...formData, id: transactions.length + 1 };
+  };
+
+  const handleRadioChange = (event) => {
+    transactionTypeRef.current = event.target;
+    console.log('current ref', transactionTypeRef.current);
+    handleChange(event);
+  };
+
+  const accountsOptions = accounts.map((account) => (
     <option key={account.id} value={account.id}>
       {account.name}
     </option>
   ));
-  let showSelect 
-  if(formData.type === 'Transfer'){
-    showSelect = (
+
+  const selectAccountId = (
+    <div>
+      <label htmlFor='accountId'>Account: </label>
+      <select name='accountId' onChange={handleChange} defaultValue=''>
+        <option value={''} disabled>
+          Select an account
+        </option>
+        {accountsOptions}
+      </select>
+    </div>
+  );
+
+  const selectsTransfer = (
+    <>
       <div>
-        <div>
-          <label htmlFor='accountIdFrom'>From:</label>
-          <select name='accountIdFrom' defaultValue='' onChange={handleChange}>
-            <option value={''} disabled>
-              Select an account
-            </option>
-            {accountsOptions}
-          </select>
-        </div>
-          <div>
-          <label htmlFor='accountIdTo'>To:</label>
-          <select name='accountIdTo' defaultValue='' onChange={handleChange}>
-            <option value={''} disabled>
-              Select an account
-            </option>
-            {accountsOptions}
-          </select>
-        </div>
-      </div> 
-    )
-  } else {
-       showSelect = (
-       <div>
-          <label htmlFor='accountId'>Account: </label>
-          <select name='accountId' defaultValue='' onChange={handleChange}>
-            <option value={''} disabled>
-              Select an account
-            </option>
-            {accountsOptions}
-          </select>
-        </div>
-       )
+        <label htmlFor='accountIdFrom'>From:</label>
+        <select name='accountIdFrom' defaultValue='' onChange={handleChange}>
+          <option value={''} disabled>
+            Select an account
+          </option>
+          {accountsOptions}
+        </select>
+      </div>
+      <div>
+        <label htmlFor='accountIdTo'>To:</label>
+        <select name='accountIdTo' defaultValue='' onChange={handleChange}>
+          <option value={''} disabled>
+            Select an account
+          </option>
+          {accountsOptions}
+        </select>
+      </div>
+    </>
+  );
 
-
-  }
-
-  
   return (
-    <section>
+    <article style={{ width: '100%' }}>
       <h2>New Transaction Form</h2>
       <form onSubmit={handleSubmit}>
-        <div onChange={handleChange}>
-          <input type='radio' name='type' value={'Deposit'}/> Deposit
-          <input type='radio' name='type' value={'Withdrawal'}  /> Withdrawal
-          <input type='radio' name='type' value={'Transfer'}  /> Transfer
+        <div onChange={handleRadioChange}>
+          <input type='radio' name='type' value={'Deposit'} /> Deposit
+          <input type='radio' name='type' value={'Withdrawal'} /> Withdrawal
+          <input type='radio' name='type' value={'Transfer'} /> Transfer
         </div>
-        {showSelect}
+        {/* {
+          //check if selected transaction type === 'Transfer'
+          transactionTypeRef.current &&
+          transactionTypeRef.current.value === 'Transfer'
+            ? selectsTransfer //true case
+            : selectAccountId //false case
+        } */}
+        {
+          //check if selected transaction type === 'Transfer'
+          formData.type === 'Transfer'
+            ? selectsTransfer //true case
+            : selectAccountId //false case
+        }
+
         <Category handleChange={handleChange} />
         <div>
           <label htmlFor='description'>Description:</label>
@@ -106,6 +126,6 @@ export default function Transaction(props) {
         </div>
         <button>Add Transaction</button>
       </form>
-    </section>
+    </article>
   );
 }

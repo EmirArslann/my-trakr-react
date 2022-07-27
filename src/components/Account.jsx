@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { StyledForm, StyledFormField } from './styles/Form.styles';
 
 export default function Account(props) {
   // const accounts = props.accounts;
@@ -48,27 +49,30 @@ export default function Account(props) {
       name: accountName,
       transactions: [],
     };
-    axios.post('/accounts', { newAccount }).then((response) => {
-      console.log('post acc response', response);
-      const newAccount = response.data;
-      setAccounts([...accounts, newAccount]);
-    });
+    axios
+      .post('/accounts', { newAccount })
+      .then((res) => {
+        console.log('res', res);
+        setAccounts([...accounts, { ...res.data }]);
+      })
+      .catch((err) => console.log('err', err));
+    // accounts.push(newAccount); BAD IDEA
+    // const updatedAccounts = [...accounts, newAccount];
+    // setAccounts(updatedAccounts);
   };
   const handleInputChange = (e) => {
     setAccountName(e.target.value);
   };
   return (
     <section>
-      <form onSubmit={handleSubmit}>
-        <h2>New Account</h2>
-        <input value={accountName} onChange={handleInputChange} />
+      <h2>New Account</h2>
+      <StyledForm onSubmit={handleSubmit}>
+        <StyledFormField>
+          <label htmlFor='accountNameInput'>Account name:</label>
+          <input value={accountName} onChange={handleInputChange} />
+        </StyledFormField>
         <button>Add new account</button>
-      </form>
-      <ul>
-        {accounts.map((account) => (
-          <li key={account.id}>{account.name}</li>
-        ))}
-      </ul>
+      </StyledForm>
     </section>
   );
 }
