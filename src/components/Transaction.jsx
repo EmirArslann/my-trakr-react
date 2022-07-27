@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useRef, useState } from 'react';
 import Category from './Category';
-import axios from 'axios';
+
 
 export default function Transaction(props) {
   const { setTransactions, transactions, accounts } = props;
